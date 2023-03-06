@@ -1,47 +1,44 @@
 import { Component } from 'react';
-import { GalleryWindow } from 'components/GalleryWindow/GalleryWindow';
+import { ModalWindow } from 'components/ModalWindow/ModalWindow';
 
 import { GalleryElement, GalleryImage } from './ImageGalleryItem.styled';
 
 export class ImageGalleryItem extends Component {
    state = {
-      currentImage: '',
       isOpenModalGallery: false,
    };
 
-   getCurrentImage = () => {
-      this.setState({ currentImage: this.props.imageData.largeImageURL });
-   };
-
-   onCloseToggle = () => {
-      this.setState({ isOpenModalGallery: !this.state.isOpenModalGallery });
+   onToggleModal = () => {
+      this.setState(prevState => {
+         return { isOpenModalGallery: !prevState.isOpenModalGallery };
+      });
    };
 
    render() {
+      const { webformatURL, tags, largeImageURL } = this.props.imageData;
+      const { isOpenModalGallery } = this.state;
       return (
          <>
             <GalleryElement
                onClick={() => {
-                  this.onCloseToggle();
+                  this.onToggleModal();
                }}
             >
-               <GalleryImage
-                  src={this.props.imageData.previewURL}
-                  alt={this.props.imageData.tags}
-                  onClick={this.getCurrentImage}
-               />
+               <GalleryImage src={webformatURL} alt={tags} onClick={this.getCurrentImage} />
             </GalleryElement>
-            {this.state.isOpenModalGallery && (
-               <GalleryWindow
-                  onClose={this.onCloseToggle}
-                  isModalOpen={this.state.isOpenModalGallery}
-                  largeImage={this.state.currentImage}
+            {isOpenModalGallery && (
+               <ModalWindow
+                  onClose={this.onToggleModal}
+                  isModalOpen={isOpenModalGallery}
+                  largeImage={largeImageURL}
                />
             )}
          </>
       );
    }
 }
+
+// { isOpenModalGallery: !this.state.isOpenModalGallery }
 
 // export const ImageGalleryItem = ({ imageData, onOpen }) => {
 //    // console.log('imageData', imageData);

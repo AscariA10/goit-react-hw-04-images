@@ -17,32 +17,24 @@ export class App extends Component {
       isOpenModal: false,
    };
 
-   componentDidMount() {
-      this.setState({ isLoading: true });
-      fetchPictures(this.state.queryParameter)
-         .then(response => response.json())
-         .then(data => {
-            this.setState({ pictures: [...data.hits], isLoading: false });
-         });
-   }
-
    componentDidUpdate(_, prevState) {
-      if (prevState.queryParameter !== this.state.queryParameter) {
+      const { queryParameter, currentPage } = this.state;
+      if (prevState.queryParameter !== queryParameter) {
          this.setState({ isLoading: true });
-         fetchPictures(this.state.queryParameter)
+         fetchPictures(queryParameter)
             .then(response => response.json())
             .then(data => {
-               console.log('currentPageQuery', this.state.currentPage);
+               console.log('currentPageQuery', currentPage);
                this.setState({ currentPage: 1, pictures: [...data.hits], isLoading: false });
             });
       }
-      if (prevState.currentPage !== this.state.currentPage && this.state.currentPage !== 1) {
+      if (prevState.currentPage !== currentPage && currentPage !== 1) {
          this.setState({ isLoading: true });
-         fetchPictures(this.state.queryParameter, this.state.currentPage)
+         fetchPictures(queryParameter, currentPage)
             .then(response => response.json())
             .then(data => {
                this.setState(prevState => {
-                  console.log('currentPage', this.state.currentPage);
+                  console.log('currentPage', currentPage);
                   return { pictures: [...prevState.pictures, ...data.hits], isLoading: false };
                });
             });
@@ -66,18 +58,17 @@ export class App extends Component {
    };
 
    render() {
-      // console.log('incrementPage', this.state.currentPage);
+      const { isLoading, pictures, isOpenModal } = this.state;
       return (
          <>
             <Searchbar onSubmit={this.onSubmit} />
-            {this.state.isLoading && <Loader />}
+            {isLoading && <Loader />}
             <ImageGallery
-               galleryData={this.state.pictures}
+               galleryData={pictures}
                onClose={this.onCloseToggle}
-               isModalOpen={this.state.isOpenModal}
+               isModalOpen={isOpenModal}
             />
-            {/* {this.state.isOpenModal && <GalleryWindow onClose={this.onCloseToggle} />} */}
-            {this.state.pictures.length > 0 && <LoadMore incrementPage={this.incrementPage} />}
+            {pictures.length >= 12 && <LoadMore incrementPage={this.incrementPage} />}
          </>
       );
    }

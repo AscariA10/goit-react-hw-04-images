@@ -1,24 +1,36 @@
 import { Component } from 'react';
 
 import { createPortal } from 'react-dom';
-import { Backdrop, Window } from './GalleryWindow.styled';
+import { Backdrop, Window } from './ModalWindow.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export class GalleryWindow extends Component {
+export class ModalWindow extends Component {
    componentDidMount() {
-      window.addEventListener('keydown', event => {
-         if (event.code === 'Escape') {
-            this.props.onClose();
-         }
-      });
+      window.addEventListener('keydown', this.onEscapeHandler);
    }
+
+   componentWillUnmount() {
+      window.removeEventListener('keydown', this.onEscapeHandler);
+   }
+
+   onEscapeHandler = event => {
+      if (event.code === 'Escape') {
+         this.props.onClose();
+      }
+   };
+
+   onBackdropHandler = event => {
+      if (event.currentTarget === event.target) {
+         this.props.onClose();
+      }
+   };
 
    render() {
       const { onClose, largeImage } = this.props;
-      console.log(largeImage);
+
       return createPortal(
-         <Backdrop>
+         <Backdrop onClick={this.onBackdropHandler}>
             <Window>
                <img src={largeImage} alt="" />
                <button
