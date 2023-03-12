@@ -1,74 +1,84 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 
 import { createPortal } from 'react-dom';
 import { Backdrop, Window } from './ModalWindow.styled';
 
 const modalRoot = document.querySelector('#modal-root');
 
-export class ModalWindow extends Component {
-   componentDidMount() {
-      window.addEventListener('keydown', this.onEscapeHandler);
-   }
+export const ModalWindow = props => {
+   const { onClose, largeImage } = props;
 
-   componentWillUnmount() {
-      window.removeEventListener('keydown', this.onEscapeHandler);
-   }
+   useEffect(() => {
+      window.addEventListener('keydown', onEscapeHandler);
+      return () => {
+         window.removeEventListener('keydown', onEscapeHandler);
+      };
+   }, []);
 
-   onEscapeHandler = event => {
+   function onEscapeHandler(event) {
       if (event.code === 'Escape') {
-         this.props.onClose();
+         onClose();
       }
-   };
-
-   onBackdropHandler = event => {
-      if (event.currentTarget === event.target) {
-         this.props.onClose();
-      }
-   };
-
-   render() {
-      const { onClose, largeImage } = this.props;
-
-      return createPortal(
-         <Backdrop onClick={this.onBackdropHandler}>
-            <Window>
-               <img src={largeImage} alt="" />
-               <button
-                  type="button"
-                  onClick={() => {
-                     onClose();
-                  }}
-               >
-                  Close
-               </button>
-            </Window>
-         </Backdrop>,
-         modalRoot
-      );
    }
-}
 
-// export const GalleryWindow = ({ onClose, largeImage }) => {
-//    return createPortal(
-//       <Backdrop>
-//          <Window>
-//             <img src={largeImage} alt="" />
-//             <button
-//                type="button"
-//                onClick={() => {
-//                   onClose();
-//                }}
-//             >
-//                Close
-//             </button>
-//          </Window>
-//       </Backdrop>,
-//       modalRoot
-//    );
+   function onBackdropHandler(event) {
+      if (event.currentTarget === event.target) {
+         onClose();
+      }
+   }
 
-//   <div class="overlay">
-//      <div class="modal">
-//         <img src="" alt="" />
-//      </div>
-//   </div>
+   return createPortal(
+      <Backdrop onClick={onBackdropHandler}>
+         <Window>
+            <img src={largeImage} alt="" />
+            <button type="button" onClick={onClose}>
+               Close
+            </button>
+         </Window>
+      </Backdrop>,
+      modalRoot
+   );
+};
+
+// export class ModalWindow extends Component {
+//    componentDidMount() {
+//       window.addEventListener('keydown', this.onEscapeHandler);
+//    }
+
+//    componentWillUnmount() {
+//       window.removeEventListener('keydown', this.onEscapeHandler);
+//    }
+
+// onEscapeHandler = event => {
+//    if (event.code === 'Escape') {
+//       this.props.onClose();
+//    }
 // };
+
+// onBackdropHandler = event => {
+//    if (event.currentTarget === event.target) {
+//       this.props.onClose();
+//    }
+// };
+
+//    render() {
+//       const { onClose, largeImage } = this.props;
+
+// return createPortal(
+//    <Backdrop onClick={this.onBackdropHandler}>
+//       <Window>
+//          <img src={largeImage} alt="" />
+//          <button
+//             type="button"
+//             onClick={() => {
+//                onClose();
+//             }}
+//          >
+//             Close
+//          </button>
+//       </Window>
+//    </Backdrop>,
+//    modalRoot
+// );
+//    }
+// }
